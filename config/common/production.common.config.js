@@ -107,6 +107,9 @@ module.exports = function() {
               },
             }, {
               loader: 'babel-loader',
+              options: {
+                presets: ['@babel/preset-env'],
+              },
             },
           ],
         },
