@@ -1,6 +1,7 @@
 import $ from 'jquery';
 import lists from '../core/lists';
 import key from '../core/key';
+import range from '../core/range';
 
 const defaultScheme = 'http://';
 const linkPattern = /^([A-Za-z][A-Za-z0-9+-.]*\:[\/]{2}|tel:|mailto:[A-Z0-9._%+-]+@|xmpp:[A-Z0-9._%+-]+@)?(www\.)?(.+)$/i;
@@ -18,6 +19,14 @@ export default class AutoLink {
       },
       'summernote.keydown': (we, event) => {
         this.handleKeydown(event);
+      },
+      'summernote.paste': () => {
+        setTimeout(() => {
+          const wordRange = this.context.invoke('editor.createRange').getWordRange(false);
+          this.lastWordRange = wordRange;
+
+          this.replace();
+        }, 10);
       },
     };
   }
@@ -44,13 +53,15 @@ export default class AutoLink {
         keyword.replace(/^(?:https?:\/\/)?(?:tel?:?)?(?:mailto?:?)?(?:xmpp?:?)?(?:www\.)?/i, '').split('/')[0]
         : keyword;
       const node = $('<a></a>').html(urlText).attr('href', link)[0];
+
       if (this.context.options.linkTargetBlank) {
         $(node).attr('target', '_blank');
       }
 
       this.lastWordRange.insertNode(node);
       this.lastWordRange = null;
-      this.context.invoke('editor.focus');
+
+      range.createFromNodeAfter(node).select();
       this.context.triggerEvent('change', this.$editable.html(), this.$editable);
     }
   }
