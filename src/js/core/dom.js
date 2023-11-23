@@ -911,7 +911,7 @@ function splitTree(root, point, options) {
         }
     }
   }
-  return ancestors.reduce(function(node, parent) {
+  return ancestors?.reduce(function(node, parent) {
     if (node === point.node) {
       node = splitNode(point, options);
     }
