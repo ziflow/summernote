@@ -16,11 +16,9 @@ export default class AutoLink {
         if (!event.isDefaultPrevented()) {
           this.handleKeyup(event);
         }
-      },
-      'summernote.keydown': (we, event) => {
+      }, 'summernote.keydown': (we, event) => {
         this.handleKeydown(event);
-      },
-      'summernote.paste': (we, event) => {
+      }, 'summernote.paste': (we, event) => {
         this.onPaste(event.originalEvent);
       },
     };
@@ -50,22 +48,29 @@ export default class AutoLink {
       // Process all matches and surrounding text
       do {
         // Append text before URL
-        fragment.appendChild(
-          document.createTextNode(pastedData.substring(lastIndex, match.index))
-        );
+        fragment.appendChild(document.createTextNode(pastedData.substring(lastIndex, match.index)));
 
         // Create and append the anchor element for the URL
         const url = match[0];
-        const anchor = $('<a>').attr('href', url).text(url);
-        fragment.appendChild(anchor[0]);
+        const $anchor = $('<a>')
+          .attr('href', url)
+          .text(url);
+
+        if (this.options.linkAddNoOpener || this.options.linkAddNoReferrer) {
+          $anchor.attr('rel', [this.options.linkAddNoOpener && 'noopener', this.options.linkAddNoReferrer && 'noreferrer'].filter(Boolean).join(' '));
+        }
+
+        if (this.context.options.linkTargetBlank) {
+          $anchor.attr('target', '_blank');
+        }
+
+        fragment.appendChild($anchor[0]);
 
         lastIndex = urlRegex.lastIndex;
       } while ((match = urlRegex.exec(pastedData)) !== null);
 
       // Append any remaining text after the last URL
-      fragment.appendChild(
-        document.createTextNode(pastedData.substring(lastIndex))
-      );
+      fragment.appendChild(document.createTextNode(pastedData.substring(lastIndex)));
 
       const marker = document.createElement('span');
       fragment.appendChild(marker);
@@ -94,16 +99,21 @@ export default class AutoLink {
 
     if (match && (match[1] || match[2])) {
       const link = match[1] ? keyword : defaultScheme + keyword;
-      const urlText = this.options.showDomainOnlyForAutolink ?
-        keyword.replace(/^(?:https?:\/\/)?(?:tel?:?)?(?:mailto?:?)?(?:xmpp?:?)?(?:www\.)?/i, '').split('/')[0]
-        : keyword;
-      const node = $('<a></a>').html(urlText).attr('href', link)[0];
+      const urlText = this.options.showDomainOnlyForAutolink ? keyword.replace(/^(?:https?:\/\/)?(?:tel?:?)?(?:mailto?:?)?(?:xmpp?:?)?(?:www\.)?/i, '').split('/')[0] : keyword;
 
-      if (this.context.options.linkTargetBlank) {
-        $(node).attr('target', '_blank');
+      const $node = $('<a></a>')
+        .html(urlText)
+        .attr('href', link);
+
+      if (this.options.linkAddNoOpener || this.options.linkAddNoReferrer) {
+        $node.attr('rel', [this.options.linkAddNoOpener && 'noopener', this.options.linkAddNoReferrer && 'noreferrer'].filter(Boolean).join(' '));
       }
 
-      this.lastWordRange.insertNode(node);
+      if (this.context.options.linkTargetBlank) {
+        $node.attr('target', '_blank');
+      }
+
+      this.lastWordRange.insertNode($node[0]);
       this.lastWordRange = null;
 
       this.context.invoke('editor.focus');
