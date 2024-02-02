@@ -301,7 +301,7 @@ export default class Editor {
       } else {
         $target = $(this.restoreTarget()).detach();
       }
-      
+
       this.setLastRange(range.createFromSelection($target).select());
       this.context.triggerEvent('media.delete', $target, this.$editable);
     });
@@ -468,9 +468,9 @@ export default class Editor {
       if (this.context.invoke(eventName) !== false) {
         event.preventDefault();
         // if keyMap action was invoked
-        if (keyName != 'ENTER') {  // <--- Without this check, we get double Empty Paragraph insertion.
-          this.context.invoke(eventName);
-        }
+        // if (keyName != 'ENTER') {  // <--- Without this check, we get double Empty Paragraph insertion.
+        //   this.context.invoke(eventName);
+        // }
         return true;
       }
     } else if (key.isEdit(event.keyCode)) {
