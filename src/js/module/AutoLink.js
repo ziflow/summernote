@@ -72,7 +72,7 @@ export default class AutoLink {
       // Append any remaining text after the last URL
       fragment.appendChild(document.createTextNode(pastedData.substring(lastIndex)));
 
-      const marker = document.createElement('span');
+      const marker = document.createTextNode('');
       fragment.appendChild(marker);
 
       // Insert the processed content
