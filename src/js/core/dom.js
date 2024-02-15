@@ -850,13 +850,10 @@ function splitNode(point, options) {
     return point.node.splitText(point.offset);
   } else {
     const childNode = point.node.childNodes[point.offset];
-    // let childNodes = listNext(childNode);
-    // remove empty nodes
-    // childNodes = childNodes.filter(function(element) {return !isEmpty(element);});
+    let childNodes = listNext(childNode);
 
     const clone = insertAfter(point.node.cloneNode(false), point.node);
-    // appendChildNodes(clone, childNodes);
-    appendChildNodes(clone, listNext(childNode));
+    appendChildNodes(clone, childNodes);
 
     if (!isSkipPaddingBlankHTML) {
       paddingBlankHTML(point.node);
