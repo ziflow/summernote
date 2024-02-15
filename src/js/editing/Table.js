@@ -564,6 +564,14 @@ export default class Table {
       $table.addClass(options.tableClassName);
     }
 
+    if (options && options.tableBorder) {
+      $table.attr('border', 1);
+    }
+
+    if (options && options.tableStyles) {
+      $table.attr('style', options.tableStyles);
+    }
+
     return $table[0];
   }
 
