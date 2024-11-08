@@ -367,6 +367,10 @@ function listDescendant(node, pred) {
   const descendants = [];
   pred = pred || func.ok;
 
+  if (!node) {
+    return [];
+  }
+
   // start DFS(depth first search) with node
   (function fnWalk(current) {
     if (node !== current && pred(current)) {
@@ -929,7 +933,7 @@ function splitTree(root, point, options) {
       node: parent,
       offset: node ? position(node) : nodeLength(parent),
     }, options);
-  });
+  }, null);
 }
 
 /**
