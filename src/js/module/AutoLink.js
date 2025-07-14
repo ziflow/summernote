@@ -44,11 +44,26 @@ export default class AutoLink {
       e.preventDefault();
 
       let lastIndex = 0;
-      let fragment = document.createDocumentFragment();
+      const fragment = document.createDocumentFragment();
+
+      // Helper function to convert text with line breaks to HTML elements
+      const appendTextWithLineBreaks = function(text, container) {
+        if (!text) return;
+        const lines = text.split(/\r\n|\n|\r/);
+        for (let i = 0; i < lines.length; i++) {
+          if (i > 0) {
+            container.appendChild(document.createElement('br'));
+          }
+          if (lines[i]) {
+            container.appendChild(document.createTextNode(lines[i]));
+          }
+        }
+      };
+
       // Process all matches and surrounding text
       do {
-        // Append text before URL
-        fragment.appendChild(document.createTextNode(pastedData.substring(lastIndex, match.index)));
+        // Append text before URL with line breaks preserved
+        appendTextWithLineBreaks(pastedData.substring(lastIndex, match.index), fragment);
 
         // Create and append the anchor element for the URL
         const url = match[0];
@@ -69,8 +84,8 @@ export default class AutoLink {
         lastIndex = urlRegex.lastIndex;
       } while ((match = urlRegex.exec(pastedData)) !== null);
 
-      // Append any remaining text after the last URL
-      fragment.appendChild(document.createTextNode(pastedData.substring(lastIndex)));
+      // Append any remaining text after the last URL with line breaks preserved
+      appendTextWithLineBreaks(pastedData.substring(lastIndex), fragment);
 
       const marker = document.createTextNode('');
       fragment.appendChild(marker);
